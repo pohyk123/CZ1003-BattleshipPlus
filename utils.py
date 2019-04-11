@@ -7,3 +7,6 @@ def setTextbox(text):
 
 def getTextbox():
 	return config.displayText
+
+def setUser(username):
+	config.user = username

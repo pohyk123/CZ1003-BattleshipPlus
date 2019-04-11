@@ -75,6 +75,11 @@ class Map:
                 self.tries.append(hitPoint)
                 for ship in self.ships:
                     didHit = didHit | ship.hit(hitPoint)
+            if(didHit):
+                pygame.mixer.Sound('./audio/hit.wav').play()
+            else:
+                pygame.mixer.Sound('./audio/miss.wav').play()
+
             return didHit #hit any = 1, nohit = 0
         else:
             # invalid selection
@@ -95,6 +100,13 @@ class Map:
         # head is in (x,y) coordinates
         head_ij = self.coord2idx(head_xy)
         newShip = Ship(len=shipType,img=img,rot=rot,head=head_ij)
+
+        #check that we do not exceed total no. of ships
+        if(len(self.ships)>=self.total_ships):
+            print('Add failed! Cannot add any more ships.')
+            setTextbox('Add failed! Cannot add any more ships.')
+            return False
+
         #check for valid placement (within bounds)
         for idx in newShip.body:
             if(idx[0]<0 or idx[1]<0 or idx[0]>=self.dim or idx[1]>=self.dim):
