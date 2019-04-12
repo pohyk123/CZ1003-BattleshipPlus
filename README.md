@@ -1,4 +1,4 @@
-![Alt text](https://drive.google.com/uc?export=download&id=149VKCfH1xWD9WfHSMXSkMIKLxp2IpMSl)
+![Alt text](https://drive.google.com/uc?export=download&id=1LbxEYDaag2SQ-U-VZ9Mv3-jE1LEQWKhA)
 # CZ1003-BattleshipPlus
 Based on the [Battleship] guessing game, with modifications.
 
