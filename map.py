@@ -1,8 +1,11 @@
-from ship import Ship
+# CZ1003 Battleship+ [Group Project]
+# Contains the Map Class
+
 import pygame
+from ship import Ship
 from utils import setTextbox
 
-#various color definitions
+# various color definitions
 white = (255,255,255)
 dark_white = (220,220,220)
 black = (0,0,0)
@@ -12,7 +15,7 @@ ready_but_color = (204,204,0)
 ready_but_active_color = (255,255,0)
 
 class Map:
-#constructor and attribute declaration
+    # constructor and attribute declaration
     def __init__(self,dim,x,y,tile_size,bgImg,total_ships=4):
         self.dim = dim
         self.x = x
@@ -30,6 +33,7 @@ class Map:
         self.nums = ()
         self.images = {}
 
+    # Create an empty placeholder map
     def createEmptyMap(self):
         mapArray = []
         for j in range(self.dim):
@@ -38,6 +42,8 @@ class Map:
                 mapArray[j].append('O')
         return mapArray
 
+
+    # converts internal index representation into pygame coordinates
     def idx2coord(self):
         coo_map = {}
         for i in range(self.dim):
@@ -46,6 +52,8 @@ class Map:
                 coo_map[(i,j)] = (self.x + i*self.ts, self.y + j*self.ts),(self.x + (i+1)*self.ts, self.y + (j+1)*self.ts)
         return coo_map
 
+
+    # converts pygame coordinates into internal index representation
     def coord2idx(self,tar):
         tar_x,tar_y = tar
         tar_x = tar_x - self.x
@@ -53,6 +61,7 @@ class Map:
         i,j = tar_x//self.ts,tar_y//self.ts
         return i,j
 
+    # attempt to hit a x,y coordinate on the map
     def hit_xy(self,xy):
         x,y = xy
         # Ensure hit target is within bounds
@@ -60,14 +69,15 @@ class Map:
         print(x,y)
         print(self.x_max,self.y_max)
         if(self.x<=x<=self.x_max and self.y<y<=self.y_max):
-            ij = self.coord2idx(xy)
+            ij = self.coord2idx(xy) # translate into internal index representation
             return self.hit(ij)
         else:
             return -1
 
+    # check if any ships were hit by target
     def hit(self,ij):
         didHit = 0
-        if ij not in self.tries:
+        if ij not in self.tries: # ensures that we do not re-hit a same spot
             #create hit points
             print('Points hit: ',end='')
             hitPoints = self.genHitPoints(ij)
@@ -85,6 +95,8 @@ class Map:
             # invalid selection
             return -1
 
+
+    # Create a surrounding region of 8 other points accompanying the selected target point (3x3 grid attack)
     def genHitPoints(self,ij):
         i,j = ij
         # Generate 9 hitpoints
@@ -96,25 +108,27 @@ class Map:
                 hitPoints_valid.append(hitPoint)
         return hitPoints_valid
 
+
+    # Add new ship to the map
     def addShip(self,head_xy,shipType,rot,img):
         # head is in (x,y) coordinates
         head_ij = self.coord2idx(head_xy)
         newShip = Ship(len=shipType,img=img,rot=rot,head=head_ij)
 
-        #check that we do not exceed total no. of ships
+        # check that we do not exceed total no. of ships
         if(len(self.ships)>=self.total_ships):
             print('Add failed! Cannot add any more ships.')
             setTextbox('Add failed! Cannot add any more ships.')
             return False
 
-        #check for valid placement (within bounds)
+        # check for valid placement (within bounds)
         for idx in newShip.body:
             if(idx[0]<0 or idx[1]<0 or idx[0]>=self.dim or idx[1]>=self.dim):
                 print('Add failed! Illegal idx: {}; out of map bounds.'.format(idx))
                 setTextbox('Add failed! Illegal idx: {}; out of map bounds.'.format(idx))
                 return False
 
-        #check for ship collision; shipType is the length of ship
+        # check for ship collision; shipType is the length of ship
         for ship in self.ships:
             for idx in newShip.body:
                 if(idx in ship.body):
@@ -122,13 +136,15 @@ class Map:
                     setTextbox('Add failed! Illegal idx: {}; another ship has already been placed here.'.format(idx))
                     return False
 
-        #if all else passes, successfully add new ship
+        # if all else passes, successfully add new ship
         self.ships.append(newShip)
         print('Ship added at {}.'.format(newShip.body))
         setTextbox('Ship added at {}.'.format(newShip.body))
         self.getMapState()
         return True
 
+
+    # Removes a ship from the map
     def dropShip(self,xy):
         x,y = xy
         idx = self.coord2idx((x,y))
@@ -139,6 +155,8 @@ class Map:
                 print('Ship removed!')
                 break
 
+
+    # State of map (hits, misses, unseen points); verbose in console format
     def getMapState(self):
         self.map = self.createEmptyMap() #refresh map
         print(self.tries)
@@ -157,6 +175,8 @@ class Map:
             print(row)
         return self.map
 
+
+    # returns alive ships/submarines
     def getAliveShips(self):
         aliveShips = []
         for ship in self.ships:
@@ -164,6 +184,8 @@ class Map:
                 aliveShips.append(ship)
         return aliveShips
 
+
+    # draws map (grid only) in pygame UI
     def drawMap(self,display_surface):
         #starting x and y coordinate
         x = self.x
@@ -203,28 +225,8 @@ class Map:
             x += self.ts
             y = delta_margin
 
-        # curr_num = 0
-        # curr_letter = 0
-        #
-        # #account for middle barrier of 50 pixels
-        # x += delta_margin
-        #
-        # #draw enemy side backrgound of board
-        # display_surface.blit(self.images['battle_waterIMG'],(x,y))
-        #
-        # #right board(enemy/attacking board)
-        # while (x < x_enemy_max):
-        #     display_surface.blit(nums[curr_num],(x+10,y-30))
-        #     curr_num += 1
-        #     while (y < y_max):
-        #         pygame.draw.rect(display_surface,green,(x,y,self.ts,self.ts),1)
-        #         if x == enemy_letter_ref_x:
-        #             display_surface.blit(letters[curr_letter],(x-30,y+5))
-        #             curr_letter += 1
-        #         y += self.ts
-        #     x += self.ts
-        #     y = delta_margin
 
+    # draw points where player/enemy has already tried attacking
     def drawTries(self,display_surface):
         for row in range(self.dim):
             for col in range(self.dim):
@@ -234,6 +236,8 @@ class Map:
                 elif(self.map[row][col] == 'X'):
                     display_surface.blit(self.images['missIMG'],(x,y))
 
+
+    # draw positions of ships
     def drawShips(self,display_surface):
         for ship in self.ships:
             shipHead_xy = self.coo_mapper[ship.head]
@@ -242,12 +246,7 @@ class Map:
             else:
                 display_surface.blit(ship.img,shipHead_xy)
 
-    # def pickupShip(self,(mouse_x,mouse_y)):
-    #     for ship in self.ships:
-    #         if(ship.init_Pos = (mouse_x,mouse_y)):
-    #             ship.isPickedUp = 1
-    #             return ship.image
-
+    # clear all drawings and return fresh grid
     def drawReset(self):
         self.drawMap()
         for ship in self.ships():

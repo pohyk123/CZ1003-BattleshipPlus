@@ -1,10 +1,7 @@
+# CZ1003 Battleship+ [Group Project]
+# Contains various account management tools to handle login, account creation & unlocking
+
 import sys
-from utils import setTextbox, getTextbox
-
-def createAcc(dataDict):
-    pass
-
-############################
 
 def login(loginInfo):
     usr, pwd, tries = loginInfo['usr'], loginInfo['pwd'], loginInfo['tries']

@@ -1,7 +1,9 @@
-# This file contains widget classes and other widget-related functions
+# CZ1003 Battleship+ [Group Project]
+# This file contains useful widget classes and other widget-related functions
 import sys, string
 import pygame
 
+# initialise pygame
 pygame.init()
 
 # Constant values
@@ -18,7 +20,6 @@ COLOR_ACTIVE = BLUE
 FONT = pygame.font.Font(None, 32)
 ACCEPTED = string.ascii_letters+string.digits+string.punctuation+" "
 
-# Widget classes below
 class Button():
     def __init__(self, txt, location, action, bg=WHITE, fg=BLACK, size=(150, 30), font_name="Arial", font_size=20):
         self.color = bg  #the static (normal) color

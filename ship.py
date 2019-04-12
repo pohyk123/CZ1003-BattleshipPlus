@@ -1,3 +1,6 @@
+# CZ1003 Battleship+ [Group Project]
+# Contains the Ship Class
+
 class Ship:
 	def __init__(self,len,img,rot,head):
 		self.len = len
@@ -10,6 +13,7 @@ class Ship:
 		self.damaged = []
 		self.isPickedUp = 0
 
+	# position indexes of the ship, based off position of shiphead
 	def bodyIdx(self):
 		body = []
 		x_head,y_head = self.head
@@ -23,6 +27,7 @@ class Ship:
 				body.append((x_head,y))
 		return body
 
+	# checks if any part of the ship gets hit and update damage
 	def hit(self,ij):
 		i,j = ij
 		if((i,j) in self.body and (i,j) not in self.damaged):
@@ -33,6 +38,7 @@ class Ship:
 		else:
 			return False
 
+	# Reset ship drawing
 	def drawReset(self):
 		self.head = self.initPos
 		self.rot = rot #horizontal (H) or vertical (V)
